@@ -12,8 +12,11 @@ import com.example.SpringBootSample.domain.user.model.MUser;
 // JpaRepositoryを継承する場合は、@Repositoryを省略できる
 public interface UserRepository extends JpaRepository<MUser, String>{
 	
-	ここで原因不明のエラーがでているので
-	一応ソースコードは13-2-2のものから使用する(13章の応用編から対応になる)
+	//ここで原因不明のエラーがでているので
+	//一応ソースコードは13-2-2のものから使用する(13章の応用編から対応になる)
+	
+	// 아래의 코드를 코멘트아웃하면 실행이 됨.
+	// 그대로 실행시 에러..
 	
 	/** ログインユーザー検索 */
 	@Query("select user"
