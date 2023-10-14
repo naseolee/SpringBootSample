@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title>404Error</title>
+</head>
+<body>
+	<!-- [src/ main/ resources/ templates/ error]の直下HTTPステータスコードと同名のhtmlファイルを用意して置けば簡単にHttpエラー毎の画面が作れる -->
+	<!-- ${status} = HTTPのエラーコードが格納されている -->
+	<!-- ${error} = HTTPのエラー概要が表示される -->
+	<h1 th:text="${status} + '' + ${error}"></h1>
+	<p>これは、404エラーの専用ページです</p>
+	<form method="post" th:action="@{/logout}">
+		<button class="btn btn-link" type="submit">ログイン画面に戻る</button>
+	</form>
+</body>
+</html>

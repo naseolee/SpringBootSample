@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+ layout:decorate="~{layout/layout}"
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+ <!-- sec:authoirze属性を使う為には xmlns:sec...の追加が必要 -->
+<head>
+</head>
+<body>
+	<div layout:fragment="menu" class="bg-light">
+		<!-- 幅がおかしい -->
+		<ul class="nav nav-pills nav-stacked">
+			<li role="presentation">
+				<a class="nav-link" th:href="@{'/user/list'}">ユーザ一覧</a>
+			</li>
+			<li role="presentation">
+				<a class="nav-link" th:href="@{'/admin'}">アドミン専用</a>
+			</li>
+			<!-- 権限によって表示しない方法 -->
+			<!-- sec:authorizeで使用可能なメソッド -->
+			<!-- hasRole("ADMIN") = ROLE_付けなくて良い -->
+			<!-- hasAuthority("ROLE_ADMIN") = ROLE_付ける -->
+			<!-- ！！統一させた方がいい、ROLE_はつけた方がいい -->
+			<li role="presentation" sec:authorize="hasRole('ADMIN')">
+				<a class="nav-link" th:href="@{'/admin'}">アドミン専用2</a>
+			</li>
+			<li role="presentation" sec:authorize="hasAuthority('ROLE_ADMIN')">
+				<a class="nav-link" th:href="@{'/admin'}">アドミン専用3</a>
+			</li>
+			
+		</ul>
+	</div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<!-- Mapperとxmlのマッピング -->
+<mapper namespace ="com.example.SpringBootSample.repository.UserMapper">
+
+<!-- マッピング 定義( ユーザー) -->
+	<resultMap type="com.example.SpringBootSample.domain.user.model.MUser" id="user">
+		<!-- idタグは必須：idタグに設定したカラムは同じ値が複数存在する場合、戻り値は1個だけ(ユニークになるように)返してくれる -->
+		<id column="user_id" property="userId"/>
+		<!-- column：select結果のカラム名、、property：javaクラスのフィールド名 -->
+		<result column="password" property="password"/>
+		<result column="user_name" property="userName"/>
+		<result column="birthday" property="birthday"/>
+		<result column="age" property="age"/>
+		<result column="gender" property="gender"/>
+		<result column="department_id" property="departmentId"/>
+		<result column="role" property="role"/>	
+		<!-- association タグを使うとマッピング定義の中に別のマッピングを入れることができる 多対「1：m_user」-->
+		<association property="department" resultMap="department"/>
+		<!-- collection タグを使うとマッピング定義の中に別のマッピングを入れることができる 「1：m_user」対多-->
+		<!-- columnPrefixは重複するカラムがあるため、別名をつけること(sqlで直接するとマッピング定義が一致しなくなるため)
+			これをつけるとsqlで取得する際にはsalary_を先頭についたカラム名にする必要がある -->
+		<collection property="salaryList" resultMap="salary" columnPrefix="salary_"/>
+	</resultMap>
+
+<!-- マッピング 定義( 部署 ) -->
+	<resultMap type="com.example.SpringBootSample.domain.user.model.Department" id="department">
+		<id column="department_id" property="departmentId"/>
+		<result column="department_name" property="departmentName"/>
+	</resultMap>
+
+<!-- マッピング 定義( 給料 ) -->
+	<resultMap type="com.example.SpringBootSample.domain.user.model.Salary" id="salary">
+		<id column="user_id" property="userId"/>
+		<id column="year_month" property="yearMonth"/>
+		<result column="salary" property="salary"/>
+	</resultMap>
+
+
+<!-- ユーザー1件登録 --> 
+	<insert id="insertOne"> 
+		insert into m_user(
+			user_id
+			, password
+			, user_name
+			, birthday
+			, age
+			, gender
+			, department_id
+			, role
+		)
+		
+		values(
+			#{userId}
+			, #{password}
+			, #{userName}
+			, #{birthday}
+			, #{age}
+			, #{gender}
+			, #{departmentId}
+			, #{role}
+		 )
+	</insert>
+	
+	<!-- ユーザー複数件取得 --> 
+	<!-- resultType: 戻り値のタイプ、検索結果のカラムが1つだけの場合はintやStringも指定可能 -->
+	<select id="findMany" resultType="MUser"> 
+		select
+			*		
+		from
+			m_user
+		<where>
+			<if test="userId != null">
+				user_id like '%' || #{userId} || '%'
+			</if>
+			<if test="userName != null">
+				and user_name like '%' || #{userName} || '%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- ユーザー1件取得 -->
+	<!-- resultMap: 上記のresultMapで設定したidをここで使用可能 -->
+	<select id="findOne" resultMap="user"> 
+		select
+			m_user.user_id 
+			, m_user.password 
+			, m_user.user_name
+			, m_user.birthday 
+			, m_user.age 
+			, m_user.gender 
+			, m_department.department_id 
+			, m_department.department_name 
+			, t_salary.user_id as salary_user_id 
+			, t_salary.year_month as salary_year_month 
+			, t_salary.salary as salary_salary
+
+		from
+			m_user
+			left join m_department
+				on m_user.department_id = m_department.department_id
+			left join t_salary
+				on m_user.user_id = t_salary.user_id			
+		where
+			m_user.user_id = #{userId}
+	</select>
+	
+	<!-- ユーザー1件更新 -->
+	<!-- @paramで渡した値をobj.value形式で使える -->
+	<update id="updateOne"> 
+		update 
+			m_user
+		set
+			password = #{user.password}
+			, user_name = #{user.userName}
+		where
+			user_id = #{user.userId}
+	</update>
+	
+	<!-- ユーザー1件削除 -->
+	<delete id = "deleteOne">
+		delete from
+			m_user
+		where
+			user_id = #{userId}
+	</delete>
+	
+	<!-- ログインユーザー情報取得 -->
+	<select id = "findLoginUser" resultType="MUser">
+		select
+			*
+		 from
+			m_user
+		where
+			user_id = #{userId}
+	</select>
+</mapper>
+
+
